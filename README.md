@@ -34,9 +34,7 @@ A simple, lightweight, and fast metadata removal tool designed to support multip
 ## Requirements
 
 - Python 3.6+
-- FFmpeg
-- Tkinter (included with Python)
-- ffmpeg-python package
+- FFmpeg (automatically installed for Windows & macOS users)
 
 ## Installation
 
