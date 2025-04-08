@@ -1,7 +1,7 @@
 # MetaClean
 
 A simple, lightweight, and fast metadata removal tool designed to support multiple file types across Windows, macOS, and Linux.
-<img width="795" alt="Screenshot 2025-04-08 at 1 15 49 AM" src="https://github.com/user-attachments/assets/41ee6fa2-0d58-4d29-b5f9-8d20602231af" />
+<img width="790" alt="Screenshot 2025-04-08 at 1 00 35 PM" src="https://github.com/user-attachments/assets/e13a0150-4bf4-4e6c-ace4-90cba7751dc3" />
 
 
 
