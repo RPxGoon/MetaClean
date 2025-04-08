@@ -12,19 +12,19 @@ class MetadataCleanerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("MetaClean")
-        self.root.geometry("800x600")
+        self.root.geometry("800x600")  # Smaller window size
         self.root.config(bg="#121212")  # Modern dark theme
 
         # Theme colors - Modern Professional Theme
         self.bg_color = "#121212"
         self.fg_color = "#e0e0e0"
-        self.accent_color = "#4a90e2"  # Modern blue
-        self.secondary_accent = "#2ecc71"  # Fresh green
+        self.accent_color = "#ff0033"  # Changed to match website's red
+        self.secondary_accent = "#9d00ff"  # Changed to purple accent
         self.button_bg = "#1e1e1e"
         self.button_hover = "#2d2d2d"
         self.button_fg = "#ffffff"
-        self.success_color = "#2ecc71"
-        self.error_color = "#e74c3c"
+        self.success_color = "#00ff00"  # Matrix green
+        self.error_color = "#ff0033"  # Matching red
 
         # About content
         self.about_info = {
@@ -44,12 +44,12 @@ class MetadataCleanerApp:
         self.main_container = tk.Frame(root, bg=self.bg_color)
         self.main_container.pack(fill=tk.BOTH, expand=True, padx=30, pady=25)
 
-        # Setup UI components
+        # Setup UI components in correct order
+        self.setup_status_bar()  # Move this first
         self.setup_title_section()
         self.setup_buttons()
         self.setup_progress_bar()
         self.setup_console()
-        self.setup_status_bar()
 
         # Variables
         self.selected_files = []
@@ -60,18 +60,16 @@ class MetadataCleanerApp:
         style = ttk.Style()
         style.theme_use("clam")
         
-        # Modern button style with animations
         style.configure(
             "Custom.TButton",
-            font=("Helvetica", 12),
-            padding=(20, 12),
+            font=("Fira Code", 11),  # Smaller font
+            padding=(15, 10),  # More compact padding
             foreground=self.button_fg,
             background=self.button_bg,
             borderwidth=0,
             focuscolor=self.accent_color,
         )
         
-        # About button style
         style.configure(
             "About.TButton",
             font=("Helvetica", 10),
@@ -79,19 +77,34 @@ class MetadataCleanerApp:
             background=self.button_bg,
         )
 
-        # Progress bar style
         style.configure(
             "Custom.Horizontal.TProgressbar",
             troughcolor=self.button_bg,
-            background=self.accent_color,
+            background="linear-gradient(90deg, #ff0033, #9d00ff)",  # Gradient effect
             thickness=8,
             borderwidth=0,
         )
 
-        # Hover effects
         style.map("Custom.TButton",
             background=[("active", self.button_hover)],
             foreground=[("active", self.fg_color)]
+        )
+
+        # Add special style for Clean button
+        style.configure(
+            "Clean.TButton",
+            font=("Fira Code", 11, "bold"),  # Make it bold
+            padding=(15, 12),  # Slightly taller
+            foreground="#ffffff",
+            background=self.button_bg,
+            borderwidth=1,
+            focuscolor=self.accent_color,
+        )
+
+        # Add hover effect for Clean button
+        style.map("Clean.TButton",
+            background=[("active", self.accent_color)],
+            foreground=[("active", "#ffffff")]
         )
 
     def show_about(self):
@@ -102,11 +115,9 @@ class MetadataCleanerApp:
             self.about_window.config(bg=self.bg_color)
             self.about_window.transient(self.root)
             
-            # Add padding
             about_frame = tk.Frame(self.about_window, bg=self.bg_color, padx=25, pady=20)
             about_frame.pack(fill=tk.BOTH, expand=True)
 
-            # Logo/Title
             title = tk.Label(
                 about_frame,
                 text="MetaClean",
@@ -116,7 +127,6 @@ class MetadataCleanerApp:
             )
             title.pack(pady=(0, 5))
 
-            # Version
             version = tk.Label(
                 about_frame,
                 text=f"Version {self.about_info['version']}",
@@ -126,7 +136,6 @@ class MetadataCleanerApp:
             )
             version.pack(pady=(0, 20))
 
-            # Description
             desc = tk.Label(
                 about_frame,
                 text=self.about_info['description'],
@@ -138,7 +147,6 @@ class MetadataCleanerApp:
             )
             desc.pack(pady=(0, 30))
 
-            # Supported Formats
             formats_frame = tk.Frame(about_frame, bg=self.bg_color)
             formats_frame.pack(fill=tk.X, pady=(0, 20))
 
@@ -169,73 +177,87 @@ class MetadataCleanerApp:
 
     def setup_title_section(self):
         title_frame = tk.Frame(self.main_container, bg=self.bg_color)
-        title_frame.pack(fill=tk.X, pady=(0, 20))
+        title_frame.pack(fill=tk.X, pady=(10, 30))  # Reduced padding
+
+        title_center_frame = tk.Frame(title_frame, bg=self.bg_color)
+        title_center_frame.pack(expand=True, fill=tk.X)
 
         self.title_label = tk.Label(
-            title_frame,
+            title_center_frame,
             text="MetaClean",
-            font=("Helvetica", 36, "bold"),
+            font=("Fira Code", 36, "bold"),  # Slightly smaller
             fg=self.accent_color,
             bg=self.bg_color
         )
-        self.title_label.pack(side=tk.LEFT, pady=(0, 5))
-
-        # About button
-        self.about_button = ttk.Button(
-            title_frame,
-            text="About",
-            style="About.TButton",
-            command=self.show_about
-        )
-        self.about_button.pack(side=tk.RIGHT, pady=(15, 0))
+        self.title_label.pack(expand=True, pady=(5, 10))  # Reduced padding
 
         self.description_label = tk.Label(
-            self.main_container,
+            title_center_frame,
             text="Simple & secure metadata removal",
-            font=("Helvetica", 14),
+            font=("Fira Code", 12),  # Smaller font
             fg=self.fg_color,
             bg=self.bg_color
         )
-        self.description_label.pack(pady=(0, 30))
+        self.description_label.pack(pady=(0, 15))
 
     def setup_buttons(self):
         self.buttons_frame = tk.Frame(
             self.main_container,
             bg=self.bg_color,
-            padx=20,
+            padx=30,
             pady=20
         )
-        self.buttons_frame.pack(fill=tk.X, padx=50)
+        self.buttons_frame.pack(fill=tk.X, padx=40)
 
-        # File selection buttons with hover animation
+        # Create a container for the file selection buttons to be side by side
+        file_buttons_frame = tk.Frame(self.buttons_frame, bg=self.bg_color)
+        file_buttons_frame.pack(fill=tk.X)
+
+        # Left side - Select File button
         self.select_file_button = ttk.Button(
-            self.buttons_frame,
+            file_buttons_frame,
             text="SELECT FILE",
             style="Custom.TButton",
             command=self.select_file
         )
-        self.select_file_button.pack(fill=tk.X, pady=(0, 10))
+        self.select_file_button.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
+        # Right side - Select Folder button
         self.select_folder_button = ttk.Button(
-            self.buttons_frame,
+            file_buttons_frame,
             text="SELECT FOLDER",
             style="Custom.TButton",
             command=self.select_folder
         )
-        self.select_folder_button.pack(fill=tk.X, pady=(0, 10))
+        self.select_folder_button.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(5, 0))
+
+        # Clean button in its own frame with increased spacing
+        clean_frame = tk.Frame(self.buttons_frame, bg=self.bg_color)
+        clean_frame.pack(fill=tk.X, pady=(25, 0))  # Increased top padding
+
+        # Add a red accent line above Clean button
+        accent_line = tk.Frame(
+            clean_frame, 
+            bg=self.accent_color, 
+            height=2
+        )
+        accent_line.pack(fill=tk.X, pady=(0, 15))  # Increased bottom padding to 15
 
         self.start_button = ttk.Button(
-            self.buttons_frame,
+            clean_frame,
             text="CLEAN",
-            style="Custom.TButton",
-            state=tk.DISABLED,
-            command=self.start_cleaning
+            style="Clean.TButton",  # Use special style
+            command=self.start_cleaning,
+            state=tk.DISABLED
         )
-        self.start_button.pack(fill=tk.X, pady=(0, 10))
+        self.start_button.pack(fill=tk.X, ipady=2)  # Slightly taller
 
     def setup_progress_bar(self):
+        self.progress_frame = tk.Frame(self.buttons_frame, bg=self.bg_color)
+        self.progress_frame.pack(fill=tk.X, pady=(20, 0))
+
         self.progress_bar = ttk.Progressbar(
-            self.buttons_frame,
+            self.progress_frame,
             mode='determinate',
             style='Custom.Horizontal.TProgressbar'
         )
@@ -246,33 +268,47 @@ class MetadataCleanerApp:
         self.console_frame = tk.Frame(self.root, bg=self.bg_color)
         self.console_text = tk.Text(
             self.console_frame,
-            height=8,
+            height=8,  # Reduced height
             bg="#1a1a1a",
-            fg=self.accent_color,
-            font=("Consolas", 10),
+            fg="#00ff00",
+            font=("Fira Code", 10),
             insertbackground=self.accent_color,
             relief=tk.FLAT,
-            padx=10,
-            pady=10
+            padx=12,
+            pady=12
         )
-        self.console_text.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+        self.console_text.pack(fill=tk.BOTH, expand=True, padx=25, pady=8)
         self.console_visible = False
 
     def setup_status_bar(self):
         self.status_frame = tk.Frame(self.main_container, bg=self.bg_color)
-        self.status_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(20, 0))
+        self.status_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(30, 10))
+
+        status_left = tk.Frame(self.status_frame, bg=self.bg_color)
+        status_left.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         self.status_label = tk.Label(
-            self.status_frame,
+            status_left,
             text="Ready",
-            font=("Helvetica", 12),
+            font=("Fira Code", 12),
             fg=self.fg_color,
             bg=self.bg_color
         )
-        self.status_label.pack(side=tk.LEFT)
+        self.status_label.pack(side=tk.LEFT, padx=10)
 
+        status_right = tk.Frame(self.status_frame, bg=self.bg_color)
+        status_right.pack(side=tk.RIGHT, padx=10)
+
+        self.about_button = ttk.Button(
+            status_right,
+            text="About",
+            style="Custom.TButton",
+            command=self.show_about
+        )
+        self.about_button.pack(side=tk.RIGHT, padx=(0, 10))
+        
         self.toggle_console_button = ttk.Button(
-            self.status_frame,
+            status_right,
             text="▲ Console",
             style="Custom.TButton",
             command=self.toggle_console
@@ -326,7 +362,6 @@ class MetadataCleanerApp:
             self.select_folder_button.config(state=tk.DISABLED)
             self.status_label.config(text="Status: Cleaning in progress...")
             
-            # Start processing in a separate thread
             threading.Thread(target=self.clean_metadata, daemon=True).start()
 
     def clean_file(self, file):
@@ -334,40 +369,35 @@ class MetadataCleanerApp:
         try:
             ext = os.path.splitext(file)[1].lower()
             
-            # Handle video files with complete metadata removal
             if ext in ['.mp4', '.mkv', '.avi', '.mov', '.flv', '.webm']:
                 stream = ffmpeg.input(file)
                 output_args = {
-                    'map_metadata': -1,  # Remove metadata
-                    'map_chapters': -1,  # Remove chapters
-                    'fflags': '+bitexact',  # Ensure deterministic output
+                    'map_metadata': -1,
+                    'map_chapters': -1,
+                    'fflags': '+bitexact',
                     'acodec': 'copy',
                     'vcodec': 'copy'
                 }
                 
-                # Format-specific handling
                 if ext == '.mkv':
                     output_args['f'] = 'matroska'
                 elif ext == '.mp4':
                     output_args['f'] = 'mp4'
-                    output_args['movflags'] = '+faststart'  # Optimize for web playback
+                    output_args['movflags'] = '+faststart'
                 
                 stream = ffmpeg.output(stream, temp_file, **output_args)
                 stream = stream.overwrite_output()
                 ffmpeg.run(stream, capture_stderr=True)
             
-            # Handle image files
             elif ext in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
                 format_name = 'jpeg' if ext == '.jpg' else ext[1:]
                 
                 try:
                     with Image.open(file) as img:
-                        # Create clean image without metadata
                         cleaned_img = Image.new(img.mode, img.size)
                         cleaned_img.putdata(list(img.getdata()))
                         cleaned_img.save(temp_file, format=format_name)
                 except Exception:
-                    # Fallback to ffmpeg for images
                     stream = ffmpeg.input(file)
                     stream = ffmpeg.output(stream, temp_file,
                                         map_metadata=-1,
@@ -375,7 +405,6 @@ class MetadataCleanerApp:
                     stream = stream.overwrite_output()
                     ffmpeg.run(stream, capture_stderr=True)
 
-            # Verify output file
             if not os.path.exists(temp_file) or os.path.getsize(temp_file) == 0:
                 raise Exception("Failed to create valid output file")
             
@@ -396,7 +425,6 @@ class MetadataCleanerApp:
         successful = 0
         failed = 0
 
-        # Show and reset progress bar
         self.progress_bar.pack(fill=tk.X, pady=(0, 10))
         self.progress_bar["value"] = 0
 
@@ -406,15 +434,12 @@ class MetadataCleanerApp:
             try:
                 self.log_to_console(f"Processing: {os.path.basename(file)}")
                 
-                # Process file
                 self.clean_file(file)
                 successful += 1
                 
-                # Update progress with smooth animation
                 progress = ((index + 1) / total_files) * 100
                 self.progress_bar["value"] = progress
                 
-                # Success message with color
                 success_msg = f"Successfully cleaned: {os.path.basename(file)}"
                 self.log_to_console(success_msg, color=self.success_color)
                 
@@ -423,15 +448,12 @@ class MetadataCleanerApp:
                 self.log_to_console(f"Error processing {os.path.basename(file)}: {str(e)}", 
                                   color=self.error_color)
 
-        # Reset processing state
         self.processing = False
         
-        # Re-enable buttons with animation
         self.root.after(0, lambda: self.start_button.config(state=tk.NORMAL))
         self.root.after(0, lambda: self.select_file_button.config(state=tk.NORMAL))
         self.root.after(0, lambda: self.select_folder_button.config(state=tk.NORMAL))
 
-        # Hide progress bar with animation
         self.root.after(1000, self.progress_bar.pack_forget)
         self.root.after(0, self.update_status_complete, successful, failed, total_files)
 
@@ -442,7 +464,7 @@ class MetadataCleanerApp:
 
     def log_to_console(self, message, color=None):
         self.console_text.config(state=tk.NORMAL)
-        tag = f"color_{time.time()}"  # Unique tag for each message
+        tag = f"color_{time.time()}"
         self.console_text.insert(tk.END, f"[*] {message}\n", tag)
         if color:
             self.console_text.tag_configure(tag, foreground=color)
