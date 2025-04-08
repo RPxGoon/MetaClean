@@ -34,13 +34,7 @@ class MetadataCleanerApp:
             "supported_formats": {
                 "Video": [".mp4", ".mkv", ".avi", ".mov", ".flv", ".webm"],
                 "Images": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"]
-            }
-        }
-
-        # Configure styles
-        self.setup_styles()
-
-        # Main container with modern padding
+            }s padding
         self.main_container = tk.Frame(root, bg=self.bg_color)
         self.main_container.pack(fill=tk.BOTH, expand=True, padx=30, pady=25)
 
