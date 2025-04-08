@@ -1,6 +1,9 @@
 # MetaClean
 
 A simple, lightweight, and fast metadata removal tool designed to support multiple file types across Windows, macOS, and Linux.
+<img width="795" alt="Screenshot 2025-04-08 at 1 15 49 AM" src="https://github.com/user-attachments/assets/41ee6fa2-0d58-4d29-b5f9-8d20602231af" />
+
+
 
 ## Features
 
@@ -31,9 +34,7 @@ A simple, lightweight, and fast metadata removal tool designed to support multip
 ## Requirements
 
 - Python 3.6+
-- FFmpeg
-- Tkinter (included with Python)
-- ffmpeg-python package
+- FFmpeg (automatically installed for Windows & macOS users)
 
 ## Installation
 
