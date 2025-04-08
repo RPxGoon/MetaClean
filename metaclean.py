@@ -34,7 +34,13 @@ class MetadataCleanerApp:
             "supported_formats": {
                 "Video": [".mp4", ".mkv", ".avi", ".mov", ".flv", ".webm"],
                 "Images": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"]
-            }s padding
+            }
+        }
+
+        # Configure styles
+        self.setup_styles()
+
+        # Main container with modern padding
         self.main_container = tk.Frame(root, bg=self.bg_color)
         self.main_container.pack(fill=tk.BOTH, expand=True, padx=30, pady=25)
 
@@ -365,7 +371,7 @@ class MetadataCleanerApp:
                     'vcodec': 'copy'
                 }
                 
-                # Format-specific handling while keeping working formats unchanged
+                     # Format-specific handling while keeping working formats unchanged
                 if ext == '.mkv':
                     output_args['f'] = 'matroska'
                 elif ext == '.mp4':
