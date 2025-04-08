@@ -29,8 +29,8 @@ class MetadataCleanerApp:
         # About content
         self.about_info = {
             "version": "1.0.0",
-            "description": """MetaClean is a powerful metadata removal tool designed for privacy-conscious users. 
-            It completely strips metadata while preserving file quality.""",
+            "description": """MetaClean is a powerful metadata removal tool designed for privacy-conscious users: 
+            Completely stripping hidden metadata deigned to fingerprint/track you and your files, ensuring original quality preservation.""",
             "supported_formats": {
                 "Video": [".mp4", ".mkv", ".avi", ".mov", ".flv", ".webm"],
                 "Images": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"]
@@ -93,11 +93,11 @@ class MetadataCleanerApp:
         # Add special style for Clean button
         style.configure(
             "Clean.TButton",
-            font=("Fira Code", 11, "bold"),  # Make it bold
-            padding=(15, 12),  # Slightly taller
-            foreground="#ffffff",
+            font=("Fira Code", 12, "bold"),  # Slightly larger & bold
+            padding=(15, 14),  # Taller button
+            foreground=self.accent_color,  # Red text
             background=self.button_bg,
-            borderwidth=1,
+            borderwidth=2,  # More prominent border
             focuscolor=self.accent_color,
         )
 
@@ -233,24 +233,16 @@ class MetadataCleanerApp:
 
         # Clean button in its own frame with increased spacing
         clean_frame = tk.Frame(self.buttons_frame, bg=self.bg_color)
-        clean_frame.pack(fill=tk.X, pady=(25, 0))  # Increased top padding
-
-        # Add a red accent line above Clean button
-        accent_line = tk.Frame(
-            clean_frame, 
-            bg=self.accent_color, 
-            height=2
-        )
-        accent_line.pack(fill=tk.X, pady=(0, 15))  # Increased bottom padding to 15
+        clean_frame.pack(fill=tk.X, pady=(35, 0))  # More space above
 
         self.start_button = ttk.Button(
             clean_frame,
             text="CLEAN",
-            style="Clean.TButton",  # Use special style
+            style="Clean.TButton",
             command=self.start_cleaning,
             state=tk.DISABLED
         )
-        self.start_button.pack(fill=tk.X, ipady=2)  # Slightly taller
+        self.start_button.pack(fill=tk.X, ipady=2)
 
     def setup_progress_bar(self):
         self.progress_frame = tk.Frame(self.buttons_frame, bg=self.bg_color)
@@ -379,6 +371,7 @@ class MetadataCleanerApp:
                     'vcodec': 'copy'
                 }
                 
+                # Format-specific handling while keeping working formats unchanged
                 if ext == '.mkv':
                     output_args['f'] = 'matroska'
                 elif ext == '.mp4':
@@ -386,13 +379,16 @@ class MetadataCleanerApp:
                     output_args['movflags'] = '+faststart'
                 elif ext == '.mov':
                     output_args['f'] = 'mov'
-                    output_args['movflags'] = '+faststart'  # Add faststart for MOV too
+                    output_args['movflags'] = '+faststart'  # QuickTime needs faststart too
                 elif ext == '.avi':
                     output_args['f'] = 'avi'
+                    output_args['fflags'] += '+genpts'  # Ensure proper timestamps
                 elif ext == '.flv':
                     output_args['f'] = 'flv'
+                    output_args['flv_metadata'] = ''  # Clear FLV specific metadata
                 elif ext == '.webm':
                     output_args['f'] = 'webm'
+                    output_args['metadata'] = ''  # Clear WebM metadata
                 
                 stream = ffmpeg.output(stream, temp_file, **output_args)
                 stream = stream.overwrite_output()
