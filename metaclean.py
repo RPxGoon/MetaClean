@@ -384,6 +384,15 @@ class MetadataCleanerApp:
                 elif ext == '.mp4':
                     output_args['f'] = 'mp4'
                     output_args['movflags'] = '+faststart'
+                elif ext == '.mov':
+                    output_args['f'] = 'mov'
+                    output_args['movflags'] = '+faststart'  # Add faststart for MOV too
+                elif ext == '.avi':
+                    output_args['f'] = 'avi'
+                elif ext == '.flv':
+                    output_args['f'] = 'flv'
+                elif ext == '.webm':
+                    output_args['f'] = 'webm'
                 
                 stream = ffmpeg.output(stream, temp_file, **output_args)
                 stream = stream.overwrite_output()
