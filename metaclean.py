@@ -13,24 +13,36 @@ class MetadataCleanerApp:
         self.root = root
         self.root.title("MetaClean")
         self.root.geometry("800x600")
-        self.root.config(bg="#1a1a2e")
+        self.root.config(bg="#121212")  # Modern dark theme
 
-        # Theme colors
-        self.bg_color = "#1a1a2e"
-        self.fg_color = "#ffffff"
-        self.accent_color = "#ff0033"
-        self.secondary_accent = "#9d00ff"
-        self.button_bg = "#000000"
+        # Theme colors - Modern Professional Theme
+        self.bg_color = "#121212"
+        self.fg_color = "#e0e0e0"
+        self.accent_color = "#4a90e2"  # Modern blue
+        self.secondary_accent = "#2ecc71"  # Fresh green
+        self.button_bg = "#1e1e1e"
+        self.button_hover = "#2d2d2d"
         self.button_fg = "#ffffff"
-        self.success_color = "#00ff00"
-        self.error_color = "#ff0000"
+        self.success_color = "#2ecc71"
+        self.error_color = "#e74c3c"
+
+        # About content
+        self.about_info = {
+            "version": "1.0.0",
+            "description": """MetaClean is a powerful metadata removal tool designed for privacy-conscious users. 
+            It completely strips metadata while preserving file quality.""",
+            "supported_formats": {
+                "Video": [".mp4", ".mkv", ".avi", ".mov", ".flv", ".webm"],
+                "Images": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"]
+            }
+        }
 
         # Configure styles
         self.setup_styles()
 
-        # Main container
+        # Main container with modern padding
         self.main_container = tk.Frame(root, bg=self.bg_color)
-        self.main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        self.main_container.pack(fill=tk.BOTH, expand=True, padx=30, pady=25)
 
         # Setup UI components
         self.setup_title_section()
@@ -42,46 +54,140 @@ class MetadataCleanerApp:
         # Variables
         self.selected_files = []
         self.processing = False
+        self.about_window = None
 
     def setup_styles(self):
         style = ttk.Style()
         style.theme_use("clam")
         
-        # Button style
+        # Modern button style with animations
         style.configure(
             "Custom.TButton",
-            font=("Helvetica", 12, "bold"),
-            padding=12,
+            font=("Helvetica", 12),
+            padding=(20, 12),
             foreground=self.button_fg,
             background=self.button_bg,
-            borderwidth=1,
-            bordercolor=self.accent_color,
-            borderradius=50
+            borderwidth=0,
+            focuscolor=self.accent_color,
         )
         
+        # About button style
+        style.configure(
+            "About.TButton",
+            font=("Helvetica", 10),
+            padding=(15, 8),
+            background=self.button_bg,
+        )
+
         # Progress bar style
         style.configure(
             "Custom.Horizontal.TProgressbar",
-            troughcolor=self.bg_color,
+            troughcolor=self.button_bg,
             background=self.accent_color,
-            thickness=10
+            thickness=8,
+            borderwidth=0,
         )
 
         # Hover effects
         style.map("Custom.TButton",
-            background=[("active", self.accent_color)],
-            foreground=[("active", "#ffffff")]
+            background=[("active", self.button_hover)],
+            foreground=[("active", self.fg_color)]
         )
 
+    def show_about(self):
+        if self.about_window is None or not tk.Toplevel.winfo_exists(self.about_window):
+            self.about_window = tk.Toplevel(self.root)
+            self.about_window.title("About MetaClean")
+            self.about_window.geometry("500x600")
+            self.about_window.config(bg=self.bg_color)
+            self.about_window.transient(self.root)
+            
+            # Add padding
+            about_frame = tk.Frame(self.about_window, bg=self.bg_color, padx=25, pady=20)
+            about_frame.pack(fill=tk.BOTH, expand=True)
+
+            # Logo/Title
+            title = tk.Label(
+                about_frame,
+                text="MetaClean",
+                font=("Helvetica", 24, "bold"),
+                fg=self.accent_color,
+                bg=self.bg_color
+            )
+            title.pack(pady=(0, 5))
+
+            # Version
+            version = tk.Label(
+                about_frame,
+                text=f"Version {self.about_info['version']}",
+                font=("Helvetica", 10),
+                fg=self.fg_color,
+                bg=self.bg_color
+            )
+            version.pack(pady=(0, 20))
+
+            # Description
+            desc = tk.Label(
+                about_frame,
+                text=self.about_info['description'],
+                font=("Helvetica", 12),
+                fg=self.fg_color,
+                bg=self.bg_color,
+                wraplength=400,
+                justify=tk.CENTER
+            )
+            desc.pack(pady=(0, 30))
+
+            # Supported Formats
+            formats_frame = tk.Frame(about_frame, bg=self.bg_color)
+            formats_frame.pack(fill=tk.X, pady=(0, 20))
+
+            tk.Label(
+                formats_frame,
+                text="Supported Formats",
+                font=("Helvetica", 14, "bold"),
+                fg=self.accent_color,
+                bg=self.bg_color
+            ).pack(pady=(0, 10))
+
+            for category, formats in self.about_info['supported_formats'].items():
+                tk.Label(
+                    formats_frame,
+                    text=f"{category}:",
+                    font=("Helvetica", 12, "bold"),
+                    fg=self.secondary_accent,
+                    bg=self.bg_color
+                ).pack(anchor='w')
+                
+                tk.Label(
+                    formats_frame,
+                    text=", ".join(formats),
+                    font=("Helvetica", 11),
+                    fg=self.fg_color,
+                    bg=self.bg_color
+                ).pack(anchor='w', pady=(0, 10))
+
     def setup_title_section(self):
+        title_frame = tk.Frame(self.main_container, bg=self.bg_color)
+        title_frame.pack(fill=tk.X, pady=(0, 20))
+
         self.title_label = tk.Label(
-            self.main_container,
+            title_frame,
             text="MetaClean",
             font=("Helvetica", 36, "bold"),
             fg=self.accent_color,
             bg=self.bg_color
         )
-        self.title_label.pack(pady=(0, 5))
+        self.title_label.pack(side=tk.LEFT, pady=(0, 5))
+
+        # About button
+        self.about_button = ttk.Button(
+            title_frame,
+            text="About",
+            style="About.TButton",
+            command=self.show_about
+        )
+        self.about_button.pack(side=tk.RIGHT, pady=(15, 0))
 
         self.description_label = tk.Label(
             self.main_container,
@@ -101,7 +207,7 @@ class MetadataCleanerApp:
         )
         self.buttons_frame.pack(fill=tk.X, padx=50)
 
-        # File selection buttons
+        # File selection buttons with hover animation
         self.select_file_button = ttk.Button(
             self.buttons_frame,
             text="SELECT FILE",
@@ -141,9 +247,9 @@ class MetadataCleanerApp:
         self.console_text = tk.Text(
             self.console_frame,
             height=8,
-            bg="#000000",
+            bg="#1a1a1a",
             fg=self.accent_color,
-            font=("Helvetica", 10),
+            font=("Consolas", 10),
             insertbackground=self.accent_color,
             relief=tk.FLAT,
             padx=10,
@@ -210,7 +316,7 @@ class MetadataCleanerApp:
 
     def start_cleaning(self):
         if not self.selected_files:
-            self.log_to_console("Error: No files selected!")
+            self.log_to_console("Error: No files selected!", color=self.error_color)
             return
 
         if not self.processing:
@@ -227,14 +333,33 @@ class MetadataCleanerApp:
         temp_file = f"{file}.temp"
         try:
             ext = os.path.splitext(file)[1].lower()
-            format_name = ext[1:]  # Remove the dot
+            
+            # Handle video files with complete metadata removal
+            if ext in ['.mp4', '.mkv', '.avi', '.mov', '.flv', '.webm']:
+                stream = ffmpeg.input(file)
+                output_args = {
+                    'map_metadata': -1,  # Remove metadata
+                    'map_chapters': -1,  # Remove chapters
+                    'fflags': '+bitexact',  # Ensure deterministic output
+                    'acodec': 'copy',
+                    'vcodec': 'copy'
+                }
+                
+                # Format-specific handling
+                if ext == '.mkv':
+                    output_args['f'] = 'matroska'
+                elif ext == '.mp4':
+                    output_args['f'] = 'mp4'
+                    output_args['movflags'] = '+faststart'  # Optimize for web playback
+                
+                stream = ffmpeg.output(stream, temp_file, **output_args)
+                stream = stream.overwrite_output()
+                ffmpeg.run(stream, capture_stderr=True)
             
             # Handle image files
-            if ext in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
-                if format_name == 'jpg':
-                    format_name = 'jpeg'
+            elif ext in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
+                format_name = 'jpeg' if ext == '.jpg' else ext[1:]
                 
-                # Try PIL first
                 try:
                     with Image.open(file) as img:
                         # Create clean image without metadata
@@ -242,36 +367,18 @@ class MetadataCleanerApp:
                         cleaned_img.putdata(list(img.getdata()))
                         cleaned_img.save(temp_file, format=format_name)
                 except Exception:
-                    # Fallback to ffmpeg
+                    # Fallback to ffmpeg for images
                     stream = ffmpeg.input(file)
                     stream = ffmpeg.output(stream, temp_file,
                                         map_metadata=-1,
-                                        **{'f': format_name},
-                                        **{'fflags': '+bitexact'})
+                                        fflags='+bitexact')
                     stream = stream.overwrite_output()
                     ffmpeg.run(stream, capture_stderr=True)
-            
-            # Handle video files
-            else:
-                stream = ffmpeg.input(file)
-                output_args = {
-                    'map_metadata': -1,
-                    'acodec': 'copy',
-                    'vcodec': 'copy'
-                }
-                
-                # Explicitly set format for mkv files
-                if ext == '.mkv':
-                    output_args['f'] = 'matroska'
-                
-                stream = ffmpeg.output(stream, temp_file, **output_args)
-                stream = stream.overwrite_output()
-                ffmpeg.run(stream, capture_stderr=True)
-            
+
             # Verify output file
             if not os.path.exists(temp_file) or os.path.getsize(temp_file) == 0:
                 raise Exception("Failed to create valid output file")
-                
+            
             os.replace(temp_file, file)
             
         except ffmpeg.Error as e:
@@ -319,7 +426,7 @@ class MetadataCleanerApp:
         # Reset processing state
         self.processing = False
         
-        # Re-enable buttons
+        # Re-enable buttons with animation
         self.root.after(0, lambda: self.start_button.config(state=tk.NORMAL))
         self.root.after(0, lambda: self.select_file_button.config(state=tk.NORMAL))
         self.root.after(0, lambda: self.select_folder_button.config(state=tk.NORMAL))
